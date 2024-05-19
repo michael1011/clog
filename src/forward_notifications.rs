@@ -69,7 +69,7 @@ async fn log_forward_event_failed(plugin: Plugin<PluginState>, event: &Value) ->
         in_channel.peer_alias,
         out_channel.short_id,
         out_channel.peer_alias,
-        event.get("failreason").unwrap()
+        event.get("failreason").unwrap().as_str().unwrap()
     );
     Ok(())
 }
