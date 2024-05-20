@@ -1,6 +1,6 @@
 use anyhow::{anyhow, Error};
 use cln_plugin::Plugin;
-use log::info;
+use log::{info, warn};
 use serde_json::Value;
 use tokio::join;
 
@@ -12,35 +12,43 @@ struct ChannelInfo<'a> {
 }
 
 pub async fn forward_event(plugin: Plugin<PluginState>, v: Value) -> Result<(), Error> {
-    let event = match v.get("forward_event") {
-        Some(p) => p,
-        None => return Err(anyhow!("could not parse forward event")),
+    let handler_res = async {
+        let event = match v.get("forward_event") {
+            Some(p) => p,
+            None => return Err(anyhow!("could not parse forward event")),
+        };
+
+        let status = match event.get("status") {
+            Some(s) => s.as_str().unwrap(),
+            None => {
+                return Err(anyhow!("could not parse forward event status"));
+            }
+        };
+
+        match status {
+            "settled" => {
+                if plugin.option(&OPT_LOG_SUCCESSFUL_FORWARDS)? {
+                    return log_forward_event_success(plugin, event).await;
+                }
+
+                Ok(())
+            }
+            "local_failed" => {
+                if plugin.option(&OPT_LOG_FAILED_FORWARDS)? {
+                    return log_forward_event_failed(plugin, event).await;
+                }
+
+                Ok(())
+            }
+            _ => Ok(()),
+        }
     };
 
-    let status = match event.get("status") {
-        Some(s) => s.as_str().unwrap(),
-        None => {
-            return Err(anyhow!("could not parse forward event status"));
-        }
+    if let Err(err) = handler_res.await {
+        warn!("Could not handle forward event: {}", err);
     };
 
-    match status {
-        "settled" => {
-            if plugin.option(&OPT_LOG_SUCCESSFUL_FORWARDS)? {
-                return log_forward_event_success(plugin, event).await;
-            }
-
-            Ok(())
-        }
-        "local_failed" => {
-            if plugin.option(&OPT_LOG_FAILED_FORWARDS)? {
-                return log_forward_event_failed(plugin, event).await;
-            }
-
-            Ok(())
-        }
-        _ => Ok(()),
-    }
+    Ok(())
 }
 
 async fn log_forward_event_success(
