@@ -3,9 +3,13 @@ use std::path::Path;
 use anyhow::{anyhow, Error};
 use cln_plugin::options::{ConfigOption, DefaultBooleanConfigOption};
 use cln_plugin::Builder;
-use log::{debug, error, info};
+use log::{error, info};
 
 use crate::node_names::NodeNames;
+
+pub mod built_info {
+    include!(concat!(env!("OUT_DIR"), "/built.rs"));
+}
 
 mod forward_notifications;
 mod node_names;
@@ -29,7 +33,6 @@ struct PluginState {
 
 #[tokio::main(flavor = "current_thread")]
 async fn main() -> Result<(), Error> {
-    debug!("Starting plugin");
     std::env::set_var(
         "CLN_PLUGIN_LOG",
         "cln_plugin=info,clog=debug,info,warn,error",
@@ -62,7 +65,11 @@ async fn main() -> Result<(), Error> {
     let started_plugin;
     match plugin.start(state.clone()).await {
         Ok(p) => {
-            info!("Started plugin");
+            info!(
+                "Started plugin v{}-{}",
+                built_info::PKG_VERSION,
+                built_info::GIT_VERSION.unwrap_or("")
+            );
             started_plugin = p;
         }
         Err(e) => return Err(anyhow!("Could not start plugin: {}", e)),
