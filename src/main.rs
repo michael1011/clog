@@ -62,15 +62,14 @@ async fn main() -> Result<(), Error> {
         },
     };
 
-    let started_plugin;
-    match plugin.start(state.clone()).await {
+    let started_plugin = match plugin.start(state.clone()).await {
         Ok(p) => {
             info!(
                 "Started plugin v{}-{}",
                 built_info::PKG_VERSION,
                 built_info::GIT_VERSION.unwrap_or("")
             );
-            started_plugin = p;
+            p
         }
         Err(e) => return Err(anyhow!("Could not start plugin: {}", e)),
     };

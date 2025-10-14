@@ -82,10 +82,10 @@ async fn log_forward_event_failed(plugin: Plugin<PluginState>, event: &Value) ->
     Ok(())
 }
 
-async fn get_channels_info(
+async fn get_channels_info<'a>(
     plugin: Plugin<PluginState>,
-    event: &Value,
-) -> Result<(ChannelInfo, ChannelInfo), Error> {
+    event: &'a Value,
+) -> Result<(ChannelInfo<'a>, ChannelInfo<'a>), Error> {
     let in_channel = event.get("in_channel").unwrap().as_str().unwrap();
     let out_channel = event.get("out_channel").unwrap().as_str().unwrap();
 
@@ -108,7 +108,10 @@ async fn get_channels_info(
     ))
 }
 
-fn parse_channel_info(short_id: &str, info: Result<String, Error>) -> Result<ChannelInfo, Error> {
+fn parse_channel_info<'a>(
+    short_id: &'a str,
+    info: Result<String, Error>,
+) -> Result<ChannelInfo<'a>, Error> {
     Ok(ChannelInfo {
         short_id,
         peer_alias: info?,

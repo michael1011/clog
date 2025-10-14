@@ -37,7 +37,7 @@ impl NodeNames {
 
     pub async fn get_channel_peer_alias(self, channel_id: &str) -> Result<String, Error> {
         let peer_pubkey = self.clone().get_channel_peer(channel_id).await?;
-        return self.get_node_alias(peer_pubkey).await;
+        self.get_node_alias(peer_pubkey).await
     }
 
     async fn get_channel_peer(self, channel_id: &str) -> Result<PublicKey, Error> {
@@ -56,7 +56,7 @@ impl NodeNames {
             })
             .await?;
 
-        if channels.channels.len() == 0 {
+        if channels.channels.is_empty() {
             return Err(anyhow!("could not find channel with id: {}", channel_id));
         }
         let channel = &channels.channels[0];
@@ -81,7 +81,7 @@ impl NodeNames {
             .call_typed(&ListnodesRequest { id: Some(pubkey) })
             .await?;
 
-        if nodes.nodes.len() == 0 {
+        if nodes.nodes.is_empty() {
             return Err(anyhow!("could not find node with id: {}", pubkey));
         }
         let node = &nodes.nodes[0];
