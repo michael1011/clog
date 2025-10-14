@@ -1,18 +1,15 @@
-use std::path::Path;
-
+use crate::logs::{forward_notifications, node_names::NodeNames};
 use anyhow::{Error, anyhow};
 use cln_plugin::Builder;
 use cln_plugin::options::{ConfigOption, DefaultBooleanConfigOption};
 use log::{error, info};
-
-use crate::node_names::NodeNames;
+use std::path::Path;
 
 pub mod built_info {
     include!(concat!(env!("OUT_DIR"), "/built.rs"));
 }
 
-mod forward_notifications;
-mod node_names;
+mod logs;
 
 const OPT_LOG_FAILED_FORWARDS: DefaultBooleanConfigOption = ConfigOption::new_bool_with_default(
     "clog-forwards-failed",
