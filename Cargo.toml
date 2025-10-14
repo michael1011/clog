@@ -1,6 +1,6 @@
 [package]
 name = "clog"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
 build = "build.rs"
 
@@ -12,14 +12,16 @@ codegen-units = 1
 panic = "abort"
 
 [dependencies]
-anyhow = "1.0.86"
-cln-plugin = "0.1.8"
-cln-rpc = "0.1.8"
-log = "0.4.21"
-moka = { version = "0.12.7", features = ["sync"] }
-serde = "1.0.202"
-serde_json = "1.0.117"
-tokio = "1.37.0"
+anyhow = "1.0.100"
+cln-plugin = "0.4.0"
+cln-rpc = "0.4.0"
+log = "0.4.28"
+moka = { version = "0.12.11", features = ["sync"] }
+serde = "1.0.228"
+serde_json = "1.0.145"
+tokio = { version = "1.48.0", default-features = false, features = [
+    "rt-multi-thread",
+] }
 
 [build-dependencies]
-built = { version = "0.7.2", features = ["git2"] }
+built = { version = "0.8.0", features = ["git2"] }
