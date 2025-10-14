@@ -2,10 +2,10 @@ use std::path::PathBuf;
 use std::str::FromStr;
 use std::time::Duration;
 
-use anyhow::{anyhow, Error};
+use anyhow::{Error, anyhow};
+use cln_rpc::ClnRpc;
 use cln_rpc::model::requests::{GetinfoRequest, ListchannelsRequest, ListnodesRequest};
 use cln_rpc::primitives::{PublicKey, ShortChannelId};
-use cln_rpc::ClnRpc;
 use moka::sync::{Cache, CacheBuilder};
 
 const CACHE_SIZE: u64 = 10_000;

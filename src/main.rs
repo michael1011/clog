@@ -1,8 +1,8 @@
 use std::path::Path;
 
-use anyhow::{anyhow, Error};
-use cln_plugin::options::{ConfigOption, DefaultBooleanConfigOption};
+use anyhow::{Error, anyhow};
 use cln_plugin::Builder;
+use cln_plugin::options::{ConfigOption, DefaultBooleanConfigOption};
 use log::{error, info};
 
 use crate::node_names::NodeNames;
@@ -31,12 +31,14 @@ struct PluginState {
     pub node_names: NodeNames,
 }
 
-#[tokio::main(flavor = "current_thread")]
+#[tokio::main]
 async fn main() -> Result<(), Error> {
-    std::env::set_var(
-        "CLN_PLUGIN_LOG",
-        "cln_plugin=info,clog=debug,info,warn,error",
-    );
+    unsafe {
+        std::env::set_var(
+            "CLN_PLUGIN_LOG",
+            "cln_plugin=info,clog=debug,info,warn,error",
+        )
+    };
 
     let plugin = match Builder::new(tokio::io::stdin(), tokio::io::stdout())
         .dynamic()

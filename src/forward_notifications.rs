@@ -1,10 +1,10 @@
-use anyhow::{anyhow, Error};
+use anyhow::{Error, anyhow};
 use cln_plugin::Plugin;
 use log::{info, warn};
 use serde_json::Value;
 use tokio::join;
 
-use crate::{PluginState, OPT_LOG_FAILED_FORWARDS, OPT_LOG_SUCCESSFUL_FORWARDS};
+use crate::{OPT_LOG_FAILED_FORWARDS, OPT_LOG_SUCCESSFUL_FORWARDS, PluginState};
 
 struct ChannelInfo<'a> {
     short_id: &'a str,
